@@ -88,3 +88,9 @@ PrintInformationMessages - Show chat messages about -
 
 DropOnStart - Use only for debug and test puproses, drop airdrop instantly after airplane flew out
 TeleportDebug - Use only for debug and test puproses, teleport all players to airplane and airdrop
+
+## Plans
+
+* Add physics to falling container (Like physics on car)
+* Add airdrop flare
+* Fix plane sound radius
