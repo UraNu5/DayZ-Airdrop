@@ -19,7 +19,7 @@ class CustomMission: MissionServer
 	bool TeleportDebug = false; // Teleport to airplane and airdrop during flight (Debug)
 	
 	bool RayReady = true; // Raycast for airdrop container fall math
-    Object m_AirPlane; // Global airplane object
+        Object m_AirPlane; // Global airplane object
 	Object m_AirDrop; // Glbal airdrop container object
 
 	EntityAI m_AirDropLoot; // Airdrop container body
