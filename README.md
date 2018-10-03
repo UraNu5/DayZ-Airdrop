@@ -6,6 +6,7 @@ DayZ 0.63 AirDrop mod by mov3ax / mov3ax.pro
 * @i_kolobov - Documentation and Code snippets
 * @Arkensor - Code snippets
 * @FIDOv - Documentation
+* @Revelin - Code snippets
 
 ## Setup
 
