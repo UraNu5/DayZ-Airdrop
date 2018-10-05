@@ -29,26 +29,34 @@ And paste it into init.c of your server, into class of your mission, by default 
 class CustomMission: MissionServer
 ```
 
-After that find OnUpdate method in your init.c
+After that copy OnUpdate method
 
 ```
-override void OnUpdate( float timeslice )
+float TimerSlice;
+	override void OnUpdate( float timeslice )
+	{
+		super.OnUpdate( timeslice );
+
+		// FPS Fix
+		TimerSlice += timeslice;
+		if (TimerSlice >= TimesliceMultiplyier)
+		{
+			CreateAirDrop();
+			TimerSlice = 0;	
+		}
+	}
 ```
 
-And put following code to it, after 
-
-```
-super.OnUpdate( timeslice );
-```
+And put it to your, init.c file, if you already have OnUpdate method you just have to add "float TimerSlice;" above it and put following  code into your OnUpdate method
 
 ```
 // FPS Fix
-TimerSlice += timeslice;
-if (TimerSlice >= TimesliceMultiplyier)
-{
-		CreateAirDrop();
-		TimerSlice = 0;	
-}
+		TimerSlice += timeslice;
+		if (TimerSlice >= TimesliceMultiplyier)
+		{
+			CreateAirDrop();
+			TimerSlice = 0;	
+		}
 ```
 
 So now you have installed airdrop plugin
