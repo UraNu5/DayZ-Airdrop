@@ -219,8 +219,15 @@ class CustomMission: MissionServer
 		m_AirDropFallSpeed[1] = AirDropFallSpeed;
 		m_AirDropFallSpeed[2] = 0;
 		
-        protected vector m_OldAirDropPos = m_AirDrop.GetPosition();
-		protected vector m_NewAirDropPos = m_OldAirDropPos - m_AirDropFallSpeed;
+        protected vector m_OldAirDropPos;
+	protected vector m_NewAirDropPos;
+
+	if (m_AirDrop != NULL)
+        	m_OldAirDropPos = m_AirDrop.GetPosition();
+	else
+		m_OldAirDropPos = "0 0 0";
+
+	m_NewAirDropPos = m_OldAirDropPos - m_AirDropFallSpeed;
 
         // Raycast, check if airdrop is on ground
         vector rayStart = m_AirDrop.GetPosition() - "0 1.1 0";
