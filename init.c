@@ -133,7 +133,7 @@ class CustomMission: MissionServer
 	void SpawnAirPlaneAndTeleportPlayer_DEBUG()
 	{
 		// Seconds devide on value of TimesliceMultiplyier (By default it is 0.01)
-		RandomTime = Math.RandomFloat(75 / TimesliceMultiplyier, 180 / TimesliceMultiplyier); // Random drop bounds
+		RandomTime = Math.RandomFloat(95 / TimesliceMultiplyier, 180 / TimesliceMultiplyier); // Random drop bounds
 		RandomRot = Math.RandomFloat(130, 190); // Random rot bounds
 
 		if (PrintDebugMessages)
