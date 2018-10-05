@@ -102,3 +102,4 @@ TeleportDebug - Use only for debug and test puproses, teleport all players to ai
 * Add physics to falling container (Like physics on car)
 * Add airdrop flare
 * Fix plane sound radius
+* Add zombie spawns around airdrop
