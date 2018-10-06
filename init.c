@@ -133,59 +133,21 @@ class CustomMission: MissionServer
 		}
 	}
 
-	string GetRandomLoot() // Random Loot Presets
+	// Random Loot Presets
+	string GetRandomLoot() 
 	{
-		string loot;
-		switch (Math.RandomInt(0, 6)) {
-		case 0:
-		loot = "LandMineTrap";
-		break;
-		case 1:
-		loot = "TTSKOPants";
-		break;
-		case 2:
-		loot = "TacticalBaconCan";
-		break;
-		case 3:
-		loot = "M4A1";
-		break;
-		case 4:
-		loot = "PlateCarrierComplete";
-		break;
-		case 5:
-		loot = "BakedBeansCan";
-		break;
-		case 6:
-		loot = "WaterBottle";
-		break;
-		}
-		
-		return loot;
+		TStringArray loot = { "LandMineTrap", "TTSKOPants", "TacticalBaconCan", "M4A1", "PlateCarrierComplete", "BakedBeansCan", "WaterBottle" };
+		return loot.GetRandomElement();
 	}
 	
 	// Generating random airdrop position from list
 	// You can get coordinates using debug monitor or this map https://dayz.ginfo.gg/
 	vector GetAirPlanePos() 
 	{
-		protected vector airplane_yaw; // Local variable
-		airplane_yaw[1] = AirPlaneHeight; // Airplane fly height 
-		
-		switch (Math.RandomInt(0, 2)) {
-		case 0:
-		airplane_yaw[0] = 5500;
-		airplane_yaw[2] = 500;
-		break;
-		case 1:
-		airplane_yaw[0] = 2700;
-		airplane_yaw[2] = 700;
-		break;
-		case 2:
-		airplane_yaw[0] = 10000;
-		airplane_yaw[2] = 1000;
-		break;
-		}
-		
-		return airplane_yaw;
+		TVectorArray positions = { "5500 0 500", "2700 0 700", "10000 0 1000" };
+		vector what = positions.GetRandomElement();
+		what[1] = AirPlaneHeight;
+        return what;
 	}
 
 	void SpawnAirPlaneAndTeleportPlayer_DEBUG()
