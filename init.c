@@ -3,6 +3,8 @@ class CustomMission: MissionServer
 	/* DayZ 0.63 AirDrop plugin by mov3ax / mov3ax.pro */
 	/* ### ### ### ### ### ### ### ### */
 	
+	bool EnableAirdrops = true; // Main switch
+	
 	float TimesliceMultiplyier = 0.01; // Timeslice multiplyier, default value is 0.01 (60 FPS)
 	float AirPlaneSpeed = 0.25; // Airplane fly speed 
 	float AirPlaneHeight = 500; // Airplane fly height 
@@ -281,14 +283,19 @@ class CustomMission: MissionServer
 	m_NewAirDropPos = m_OldAirDropPos - m_AirDropFallSpeed;
 
         // Raycast, check if airdrop is on ground
-        vector rayStart = m_AirDrop.GetPosition() - "0 1.1 0";
-		vector rayEnd = m_NewAirDropPos;
-		vector hitPos;
-		vector hitNormal;
-		int hitComponentIndex;
+        vector rayStart;
+	if (m_AirDrop != NULL)
+		rayStart = m_AirDrop.GetPosition() - "0 1.1 0";
+	else
+		rayStart = "0 0 0";
+		
+	vector rayEnd = m_NewAirDropPos;
+	vector hitPos;
+	vector hitNormal;
+	int hitComponentIndex;
 		
         protected vector m_AirPlanePosDYN = m_AirPlane.GetPosition();
-		protected vector m_NewAirPlanePosDYN = m_AirPlanePos - "0 10 0";
+	protected vector m_NewAirPlanePosDYN = m_AirPlanePos - "0 10 0";
 
         protected vector m_DropPos = m_NewAirPlanePosDYN;	
 			
@@ -472,7 +479,8 @@ class CustomMission: MissionServer
 		TimerSlice += timeslice;
 		if (TimerSlice >= TimesliceMultiplyier)
 		{
-			CreateAirDrop();
+			if (EnableAirdrops)
+				CreateAirDrop();
 			TimerSlice = 0;	
 		}
 	}
