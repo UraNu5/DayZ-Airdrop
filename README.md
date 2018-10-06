@@ -66,6 +66,8 @@ So now you have installed airdrop plugin
 Default code -
 
 ```
+bool EnableAirdrops = true; // Main switch
+
 float TimesliceMultiplyier = 0.01; // Timeslice multiplyier, default value is 0.01 (60 FPS)
 float AirPlaneSpeed = 0.25; // Airplane fly speed 
 float AirPlaneHeight = 500; // Airplane fly height 
@@ -83,6 +85,7 @@ bool DropOnStart = false; // Drop airdrop instantly after airplane (Debug)
 bool TeleportDebug = false; // Teleport to airplane and airdrop during flight (Debug)
 ```
 
+EnableAirdrops - Enable or Disable airdrop switch
 TimesliceMultiplyier - Value that responds for smooth processing time, default value is 1, so if you wan't to process time in 60 FPS you need divide 1 by 60 that as a result equals 0.01
 AirPlaneSpeed - How fast airplane will move
 AirPlaneHeight - How high will the plane fly
