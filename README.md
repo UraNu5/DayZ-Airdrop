@@ -79,6 +79,10 @@ bool PrintInformationCoordinates = true; // Show in chat coordinates where airdr
 // 36000 Seconds = 1 Hour
 float RemoveTime = 36000 / TimesliceMultiplyier; // After how much time airplane and loot will be removed and new airplane will be spawned
 bool SpawnZombie = true; // Spawn zombie near airdrop when landed
+bool ShowSignal = true; // Show smoke signal when airdrop landed
+
+float RandomBoundsMin = 95; // Airdrop drop bounds min
+float RandomBoundsMax = 180; // Airdrop drop bounds max
 	
 bool PrintDebugMessages = false; // Show debug messages (Debug)
 bool DropOnStart = false; // Drop airdrop instantly after airplane (Debug)
@@ -91,7 +95,10 @@ AirPlaneSpeed - How fast airplane will move
 AirPlaneHeight - How high will the plane fly
 AirDropFallSpeed - How fast airdrop will fall
 TicksTimerFromStart - How much time will pass from the server start to first airdrop
+RandomBoundsMin - Airdrop drop bounds minimum
+RandomBoundsMax - Airdrop drop bounds maximum
 SpawnZombie - Spawn zombie near airdrop when landed
+ShowSignal - Show smoke signal when airdrop landed
 PrintInformationMessages - Show chat messages about -
 
 * Airplane flew out
