@@ -16,7 +16,11 @@ class CustomMission: MissionServer
 	// 36000 Seconds = 1 Hour
 	float RemoveTime = 36000 / TimesliceMultiplyier; // After how much time airplane and loot will be removed and new airplane will be spawned
 	bool SpawnZombie = true; // Spawn zombie near airdrop when landed
+	bool ShowSignal = true; // Show smoke signal when airdrop landed
 	
+	float RandomBoundsMin = 95; // Airdrop drop bounds min
+	float RandomBoundsMax = 180; // Airdrop drop bounds max
+
 	bool PrintDebugMessages = false; // Show debug messages (Debug)
 	bool DropOnStart = false; // Drop airdrop instantly after airplane (Debug)
 	bool TeleportDebug = false; // Teleport to airplane and airdrop during flight (Debug)
@@ -28,6 +32,7 @@ class CustomMission: MissionServer
 	EntityAI m_AirDropLoot; // Airdrop container body
 	ItemBase m_AirDropBase; // Airdrop container base
 	Particle DropEffect; // Airdrop land particle effect	
+	Particle SignalEffect; // Airdrop land particle effect	
 	
 	float RandomRot = 0; // Default random rotation variable
 	
@@ -186,7 +191,7 @@ class CustomMission: MissionServer
 	void SpawnAirPlaneAndTeleportPlayer_DEBUG()
 	{
 		// Seconds devide on value of TimesliceMultiplyier (By default it is 0.01)
-		RandomTime = Math.RandomFloat(95 / TimesliceMultiplyier, 180 / TimesliceMultiplyier); // Random drop bounds
+		RandomTime = Math.RandomFloat(RandomBoundsMin / TimesliceMultiplyier, RandomBoundsMax / TimesliceMultiplyier); // Random drop bounds
 		RandomRot = Math.RandomFloat(130, 190); // Random rot bounds
 
 		if (PrintDebugMessages)
@@ -335,6 +340,12 @@ class CustomMission: MissionServer
 					GetGame().CreateObject( WorkingZombieClasses().GetRandomElement(), m_AirDrop.GetPosition() - "-10 0 10", false, true );
 				}
 				
+				if (ShowSignal)
+				{
+					vector signal = "0 1.1 0";
+					SignalEffect = Particle.Play( ParticleList.RDG2, m_AirDrop.GetPosition() + signal );			
+				}
+				
 				// Reset it to default values
 				RayReady = true;
 			}
@@ -395,6 +406,18 @@ class CustomMission: MissionServer
 					m_AirDropLoot.SetPosition(vector.Zero);
 					GetGame().ObjectDelete( m_AirDropLoot ); 
 					m_AirDropLoot = NULL;	
+				}
+				
+				if (DropEffect != NULL)
+				{
+					DropEffect.Stop();
+					DropEffect = NULL;
+				}
+				
+				if (SignalEffect != NULL)
+				{
+					SignalEffect.Stop();
+					SignalEffect = NULL;
 				}
 				
 				// Reset it to default values
