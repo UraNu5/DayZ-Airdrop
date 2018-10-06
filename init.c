@@ -369,21 +369,33 @@ class CustomMission: MissionServer
 			// Removing all objects when remove timer is passed
 			if (!RemovePased)
 			{
-				m_AirDrop.SetPosition(vector.Zero);
-				GetGame().ObjectDelete( m_AirDrop ); 
-				m_AirDrop = NULL;	
+				if (m_AirDrop != NULL)
+				{
+					m_AirDrop.SetPosition(vector.Zero);
+					GetGame().ObjectDelete( m_AirDrop ); 
+					m_AirDrop = NULL;	
+				}
 				
-				m_AirPlane.SetPosition(vector.Zero);
-				GetGame().ObjectDelete( m_AirPlane ); 
-				m_AirPlane = NULL;	
+				if (m_AirPlane != NULL)
+				{
+					m_AirPlane.SetPosition(vector.Zero);
+					GetGame().ObjectDelete( m_AirPlane ); 
+					m_AirPlane = NULL;	
+				}
 				
-				m_AirDropBase.SetPosition(vector.Zero);
-				GetGame().ObjectDelete( m_AirDropBase ); 
-				m_AirDropBase = NULL;	
+				if (m_AirDropBase != NULL)
+				{
+					m_AirDropBase.SetPosition(vector.Zero);
+					GetGame().ObjectDelete( m_AirDropBase ); 
+					m_AirDropBase = NULL;	
+				}
 				
-				m_AirDropLoot.SetPosition(vector.Zero);
-				GetGame().ObjectDelete( m_AirDropLoot ); 
-				m_AirDropLoot = NULL;	
+				if (m_AirDropLoot != NULL)
+				{
+					m_AirDropLoot.SetPosition(vector.Zero);
+					GetGame().ObjectDelete( m_AirDropLoot ); 
+					m_AirDropLoot = NULL;	
+				}
 				
 				// Reset it to default values
 				AirPassed = false;
