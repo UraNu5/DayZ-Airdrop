@@ -104,6 +104,6 @@ TeleportDebug - Use only for debug and test puproses, teleport all players to ai
 ## Plans
 
 * Add physics to falling container (Like physics on car)
-* Add airdrop flare
+* ✅ Add airdrop flare
 * Fix plane sound radius
 * ✅ Add zombie spawns around airdrop
