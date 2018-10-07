@@ -29,24 +29,24 @@ class CustomMission : MissionServer
 ```
 ref AirDrop AirDropClass; // Class definition
 
-	void CustomMission()
-	{
-		AirDropClass = new AirDrop;		
-	}
+void CustomMission()
+{
+	AirDropClass = new AirDrop;		
+}
 
-	float TimerSlice; // Timeslice
-	override void OnUpdate( float timeslice )
-	{
-		super.OnUpdate( timeslice );
+float TimerSlice; // Timeslice
+override void OnUpdate( float timeslice )
+{
+	super.OnUpdate( timeslice );
 
-		// FPS Fix
-		TimerSlice += timeslice;
-		if (TimerSlice >= AirDropClass.TimesliceMultiplyier)
-		{
-			AirDropClass.CreateAirDrop();
-			TimerSlice = 0;	
-		}
+	// FPS Fix
+	TimerSlice += timeslice;
+	if (TimerSlice >= AirDropClass.TimesliceMultiplyier)
+	{
+		AirDropClass.CreateAirDrop();
+		TimerSlice = 0;	
 	}
+}
 ```
 
 If you already have OnUpdate method you just have to add following code into it
