@@ -117,7 +117,7 @@ TeleportDebug - Use only for debug and test puproses, teleport all players to ai
 
 ## Setup tutorial
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=YOUTUBE_VIDEO_ID_HERE
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=kYgzQY_wy94
 " target="_blank"><img src="http://img.youtube.com/vi/kYgzQY_wy94/0.jpg" 
 alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
 
