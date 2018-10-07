@@ -1,59 +1,149 @@
-class CustomMission: MissionServer
-{	
-	/* DayZ 0.63 AirDrop plugin by mov3ax / mov3ax.pro */
+class AirDrop
+{
 	/* ### ### ### ### ### ### ### ### */
-	
+	/* DayZ 0.63 AirDrop plugin by mov3ax / mov3ax.pro */
+	/* ### ### ### ### ### ### ### ### */	
+
+	void AirDrop()
+	{
+	}
+
+	void ~AirDrop()
+	{
+	}
+
+	/* ### ### ### ### ### ### ### ### */
+	/* Configuration of plugin */
+	/* ### ### ### ### ### ### ### ### */
+
 	bool EnableAirdrops = true; // Main switch
-	
 	float TimesliceMultiplyier = 0.01; // Timeslice multiplyier, default value is 0.01 (60 FPS)
 	float AirPlaneSpeed = 0.25; // Airplane fly speed 
 	float AirPlaneHeight = 500; // Airplane fly height 
-	float AirDropFallSpeed = 0.2; // Airdrop fall speed 
 	// 600 Seconds = 10 Minutes
-	float TicksTimerFromStart = 600 / TimesliceMultiplyier; // How much time will pass from the server start to first airdrop
+	float TicksTimerFromStart = 10  / TimesliceMultiplyier; // How much time will pass from the server start to first airdrop
 	bool PrintInformationMessages = true; // Show in chat when airplane flew out and when airdrop is landed
 	bool PrintInformationCoordinates = true; // Show in chat coordinates where airdrop is landed
 	// 36000 Seconds = 1 Hour
 	float RemoveTime = 36000 / TimesliceMultiplyier; // After how much time airplane and loot will be removed and new airplane will be spawned
 	bool SpawnZombie = true; // Spawn zombie near airdrop when landed
 	bool ShowSignal = true; // Show smoke signal when airdrop landed
-	
 	float RandomBoundsMin = 95; // Airdrop drop bounds min
 	float RandomBoundsMax = 180; // Airdrop drop bounds max
-
 	bool PrintDebugMessages = false; // Show debug messages (Debug)
 	bool DropOnStart = false; // Drop airdrop instantly after airplane (Debug)
 	bool TeleportDebug = false; // Teleport to airplane and airdrop during flight (Debug)
-	
-	bool RayReady = true; // Raycast for airdrop container fall math
+
+	/* ### ### ### ### ### ### ### ### */
+	/* Local variables */
+	/* ### ### ### ### ### ### ### ### */
+
+	vector m_AirPlaneFixedPosition; // Local variable
+	vector m_DropPos; // Local variable
+
 	Object m_AirPlane; // Global airplane object
 	Object m_AirDrop; // Glbal airdrop container object
+	Object m_Platform; // Glbal airdrop container object
 
 	EntityAI m_AirDropLoot; // Airdrop container body
 	ItemBase m_AirDropBase; // Airdrop container base
+
 	Particle DropEffect; // Airdrop land particle effect	
 	Particle SignalEffect; // Airdrop land particle effect	
-	
-	float RandomRot = 0; // Default random rotation variable
-	
-	// 100 Seconds
-	float RandomTime = 100; // Default random drop variable
 
+	vector RandomRotOrientation; // Local variable	
+	EntityAI PhysicsBody; // Local variable
+
+	float RandomRot = 0; // Default random rotation variable
+	float RandomTime = 100; // Default random drop variable
 	float Delay = 0; // Local variable for security
-	
+	float Ground; // Local variable for security
+
 	int AirDropTime = 0; // Local variable
 	int AirTimer = 0; // Local variable
 	int RemoveTimer = 0; // Local variable
-	
+
+	bool RayReady = true; // Local variable
 	bool TimerPassed = false; // Local variable
 	bool AirPassed = false; // Local variable
 	bool RemovePased = false; // Local variable
-	
 	bool DropTime = false; // Local variable
 	bool PassTime = false; // Local variable
+
+	/* ### ### ### ### ### ### ### ### */
+	/* Global functions */
+	/* ### ### ### ### ### ### ### ### */
+
+	// Send message in global chat
+	void SendMessage(string message) 
+	{
+		ref array<Man> players = new array<Man>; 
+		GetGame().GetPlayers( players ); 
+		
+		for ( int i = 0; i < players.Count(); i++ ) 
+		{ 
+			PlayerBase player1; 
+			Class.CastTo(player1, players.Get(i)); 
+
+			Param1<string> m_AirTimer = new Param1<string>(message); 
+			GetGame().RPCSingleParam(player1, ERPCs.RPC_USER_ACTION_MESSAGE, m_AirTimer, true, player1.GetIdentity()); 
+		}
+	}
 	
-	vector RandomRotOrientation; // Local variable
+	// Teleport all players to position, debug
+	void SendPos(vector pos) 
+	{
+		ref array<Man> players = new array<Man>; 
+		GetGame().GetPlayers( players ); 
+		
+		for ( int i = 0; i < players.Count(); i++ ) 
+		{ 
+			PlayerBase player1; 
+			Class.CastTo(player1, players.Get(i)); 
+
+			player1.SetPosition(pos);
+		}
+	}
+
+	/* ### ### ### ### ### ### ### ### */
+	/* Configuration of loot and spawn points */
+	/* ### ### ### ### ### ### ### ### */
+
+	// Random Loot Presets
+	string GetRandomLoot() 
+	{
+		TStringArray loot = {
+		"LandMineTrap", 
+		"TTSKOPants", 
+		"TacticalBaconCan", 
+		"M4A1", 
+		"PlateCarrierComplete", 
+		"BakedBeansCan", 
+		"WaterBottle", 
+		};
+
+		return loot.GetRandomElement();
+	}
 	
+	// Generating random airdrop position from list
+	// You can get coordinates using debug monitor or this map https://dayz.ginfo.gg/
+	vector GetAirPlanePos() 
+	{
+		TVectorArray positions = { 
+		"5500 0 500", 
+		"2700 0 700", 
+		"10000 0 1000", 
+		};
+
+		vector what = positions.GetRandomElement();
+		what[1] = AirPlaneHeight;
+        return what;
+	}
+
+	/* ### ### ### ### ### ### ### ### */
+	/* Zombie spawn list */
+	/* ### ### ### ### ### ### ### ### */
+
 	TStringArray WorkingZombieClasses()
 	{
 		return {
@@ -103,176 +193,102 @@ class CustomMission: MissionServer
 		"ZmbF_Clerk_Normal_Base","ZmbF_Clerk_Normal_Blue","ZmbF_Clerk_Normal_White","ZmbF_Clerk_Normal_Green","ZmbF_Clerk_Normal_Red",
 		};
 	}
-	
-	void SendMessage(string message) // Send message in global chat
-	{
-		ref array<Man> players = new array<Man>; 
-		GetGame().GetPlayers( players ); 
-		
-		for ( int i = 0; i < players.Count(); i++ ) 
-		{ 
-			PlayerBase player1; 
-			Class.CastTo(player1, players.Get(i)); 
 
-			Param1<string> m_AirTimer = new Param1<string>(message); 
-			GetGame().RPCSingleParam(player1, ERPCs.RPC_USER_ACTION_MESSAGE, m_AirTimer, true, player1.GetIdentity()); 
-		}
-	}
-	
-	void SendPos(vector pos) // Teleport all players to position, debug
-	{
-		ref array<Man> players = new array<Man>; 
-		GetGame().GetPlayers( players ); 
-		
-		for ( int i = 0; i < players.Count(); i++ ) 
-		{ 
-			PlayerBase player1; 
-			Class.CastTo(player1, players.Get(i)); 
+	/* ### ### ### ### ### ### ### ### */
+	/* Airplane and airdrop setup */
+	/* ### ### ### ### ### ### ### ### */
 
-			player1.SetPosition(pos);
-		}
-	}
-
-	// Random Loot Presets
-	string GetRandomLoot() 
-	{
-		TStringArray loot = { "LandMineTrap", "TTSKOPants", "TacticalBaconCan", "M4A1", "PlateCarrierComplete", "BakedBeansCan", "WaterBottle" };
-		return loot.GetRandomElement();
-	}
-	
-	// Generating random airdrop position from list
-	// You can get coordinates using debug monitor or this map https://dayz.ginfo.gg/
-	vector GetAirPlanePos() 
-	{
-		TVectorArray positions = { "5500 0 500", "2700 0 700", "10000 0 1000" };
-		vector what = positions.GetRandomElement();
-		what[1] = AirPlaneHeight;
-        return what;
-	}
-
-	void SpawnAirPlaneAndTeleportPlayer_DEBUG()
+	void GetAirPlaneInfo()
 	{
 		// Seconds devide on value of TimesliceMultiplyier (By default it is 0.01)
 		RandomTime = Math.RandomFloat(RandomBoundsMin / TimesliceMultiplyier, RandomBoundsMax / TimesliceMultiplyier); // Random drop bounds
 		RandomRot = Math.RandomFloat(130, 190); // Random rot bounds
 
 		if (PrintDebugMessages)
-			SendMessage("Debug - RandomRot " + RandomRot);		
+		SendMessage("[Airdrop, Debug] Random rotation of airplane is " + RandomRot);		
 		
-        // Dynamic movement forward
-        float rotationYaw = RandomRot;
-        float f = rotationYaw * 0.017453292;
-		float motionX  = (double)(Math.Sin(f) * 7.5); // 7.5 is airdrop container motion speed
-        float motionZ = (double)(Math.Cos(f) * 7.5); // 7.5 is airdrop container motion speed
+		// Dynamic movement forward
+        float Forward = RandomRot * 0.017453292;
+
+		// 7.5 is airdrop container motion speed
+		float MotionX  = (double)(Math.Sin(Forward) * 7.5); 
+        float MotionZ = (double)(Math.Cos(Forward) * 7.5);
 
 		// Fixed position, if we dont multiply value to -1 it will move backwards
-        protected vector m_AirPlaneFixedPosition;
-		m_AirPlaneFixedPosition[0] = motionX * -1;
+		m_AirPlaneFixedPosition[0] = MotionX * -1;
 		m_AirPlaneFixedPosition[1] = 10;
-		m_AirPlaneFixedPosition[2] = motionZ * -1;
-	
+		m_AirPlaneFixedPosition[2] = MotionZ * -1;
 		RandomRotOrientation[0] = RandomRot;
-		
-        m_AirPlane = GetGame().CreateObject( "Land_Wreck_C130J", GetAirPlanePos(), false, true ); // Create airplane model
+
+		m_AirPlane = GetGame().CreateObject( "Land_Wreck_C130J", GetAirPlanePos(), false, true ); // Create airplane model
 		m_AirPlane.SetOrientation(RandomRotOrientation); // Rotate it to random angles in yaw
 
-		//FIXME: Broken sound raduis
-        GetGame().CreateSoundOnObject(m_AirPlane, "powerGeneratorLoop", 10000, true, false); // Attach airplane sound to itself
+		m_AirPlane.PlaySoundLoop("powerGeneratorLoop", 10000, true); // Attach airplane sound to itself, need to be fixed
 		
 		if (PrintInformationMessages)
-			SendMessage("Airplane flew out!");		
+			if (m_AirPlane != NULL)
+				SendMessage("[Airdrop] Airplane was spotted on map!");	
 
-		protected vector m_AirPlanePos = m_AirPlane.GetPosition();		
-        protected vector m_NewAirPlanePos = m_AirPlanePos - "0 0 0";	
+		m_AirPlane.SetPosition( m_AirPlane.GetPosition() );
+		m_DropPos = ( m_AirPlane.GetPosition() ) - m_AirPlaneFixedPosition;
 
-        m_AirPlane.SetPosition(m_NewAirPlanePos);
+		protected vector pos; pos[0] = 0; pos[1] = AirPlaneHeight; pos[2] = 0;
 
-        protected vector m_AirPlanePosDYN = m_AirPlane.GetPosition();
-		protected vector m_NewAirPlanePosDYN = (m_AirPlanePos) - m_AirPlaneFixedPosition;
-
-        protected vector m_DropPos = m_NewAirPlanePosDYN;	
-				
+		m_Platform = GetGame().CreateObject( "Land_Container_1Bo", pos, false, true ); 
+		PhysicsBody = EntityAI.Cast( GetGame().CreateObject( "CivilianSedan", m_Platform.GetPosition() + "0 0 0", false, true ) );
+        PhysicsBody.SetAllowDamage( false );	
+	
 		if (DropOnStart) // For debug puproses only
-		{					
+		{
 			RayReady = false;
+
+			if (PrintInformationMessages)
+			SendMessage("[Airdrop] Airdrop was dropped from the plane!");	
+
 			m_AirDrop = GetGame().CreateObject( "Land_Container_1Bo", m_DropPos, false, true ); // Create airdrop model, in this case it is red container
 			
-			if (PrintInformationMessages)
-				SendMessage("Airdrop dropped!");	
-			
+			SetVelocity(PhysicsBody, "10 0 0");
+			GetGame().ObjectDelete(m_Platform);
+			SetVelocity(PhysicsBody, "10 0 0");
+
 			// Reset it to default values
 			RemoveTimer = 0;
 			RemovePased = false;
 		}
 
-		if (PrintDebugMessages)
+		if (TeleportDebug) // For debug puproses only
 		{
-			if (PrintInformationMessages)
-				SendMessage("Airdrop dropped!");
-			
-			if (TeleportDebug)
-				SendPos(m_AirPlane.GetPosition());
-		}			
-    }
+			SendPos(m_AirPlane.GetPosition());
+		}
+	}
 
-    void SpawnAirPlaneAndMove_DEBUG()
-	{	
-        // Dynamic movement forward
-		float rotationYaw = RandomRot;
-        float f = rotationYaw * 0.017453292;
-		float motionX  = (double)(Math.Sin(f) * AirPlaneSpeed); // Airplane speed
-        float motionZ = (double)(Math.Cos(f) * AirPlaneSpeed); // Airplane speed
+	void MoveAirPlane()
+	{
+		// Dynamic movement forward
+        float Forward = RandomRot * 0.017453292;
+
+		// 7.5 is airdrop container motion speed
+		float MotionX  = (double)(Math.Sin(Forward) * AirPlaneSpeed); 
+        float MotionZ = (double)(Math.Cos(Forward) * AirPlaneSpeed);
 
 		// Fixed position, if we dont multiply value to -1 it will move backwards
-        protected vector m_AirPlaneFixedPosition;
-		m_AirPlaneFixedPosition[0] = motionX * -1;
+		m_AirPlaneFixedPosition[0] = MotionX * -1;
 		m_AirPlaneFixedPosition[1] = 0;
-		m_AirPlaneFixedPosition[2] = motionZ * -1;
+		m_AirPlaneFixedPosition[2] = MotionZ * -1;
 
-        protected vector m_AirPlanePos = m_AirPlane.GetPosition();
-		protected vector m_NewAirPlanePos = m_AirPlanePos + m_AirPlaneFixedPosition;
+		m_AirPlane.SetPosition( m_AirPlane.GetPosition() + m_AirPlaneFixedPosition );
+		m_DropPos = ( m_AirPlane.GetPosition() ) - m_AirPlaneFixedPosition;
 
-        m_AirPlane.SetPosition(m_NewAirPlanePos);
-
-		protected vector m_AirDropFallSpeed;
-		m_AirDropFallSpeed[0] = 0;
-		m_AirDropFallSpeed[1] = AirDropFallSpeed;
-		m_AirDropFallSpeed[2] = 0;
-		
-        protected vector m_OldAirDropPos;
-	protected vector m_NewAirDropPos;
-
-	if (m_AirDrop != NULL)
-        	m_OldAirDropPos = m_AirDrop.GetPosition();
-	else
-		m_OldAirDropPos = "0 0 0";
-
-	m_NewAirDropPos = m_OldAirDropPos - m_AirDropFallSpeed;
-
-        // Raycast, check if airdrop is on ground
-        vector rayStart;
-	if (m_AirDrop != NULL)
-		rayStart = m_AirDrop.GetPosition() - "0 1.1 0";
-	else
-		rayStart = "0 0 0";
-		
-	vector rayEnd = m_NewAirDropPos;
-	vector hitPos;
-	vector hitNormal;
-	int hitComponentIndex;
-		
-        protected vector m_AirPlanePosDYN = m_AirPlane.GetPosition();
-	protected vector m_NewAirPlanePosDYN = m_AirPlanePos - "0 10 0";
-
-        protected vector m_DropPos = m_NewAirPlanePosDYN;	
-			
 		if (!RayReady)
 		{
-			if (DayZPhysics.RaycastRV(rayStart, rayEnd, hitPos, hitNormal, hitComponentIndex, NULL, NULL, m_AirDrop))
+			Ground = GetGame().SurfaceY(m_AirDrop.GetPosition()[0], m_AirDrop.GetPosition()[2]);
+			if (PhysicsBody.GetPosition()[1] <= Ground)
+				PhysicsBody.SetVelocity(PhysicsBody, "0 0 0");
+
+			if (GetVelocity(PhysicsBody)[0] < 0.0001 && GetVelocity(PhysicsBody)[1] < 0.0001 && GetVelocity(PhysicsBody)[2] < 0.0001)
 			{
-				m_AirDrop.SetPosition(hitPos + "0 1.1 0");
-				m_AirDrop.SetOrientation(hitNormal);
-				
+				m_AirDrop.PlaceOnSurface();
+	
 				// Create airdrop lootable container, in this case it is sea chest	
 				m_AirDropLoot = EntityAI.Cast(GetGame().CreateObject( "SeaChest", m_AirDrop.GetPosition(), false, true )); // We can't add barrel because it have to be opened
 				
@@ -290,10 +306,15 @@ class CustomMission: MissionServer
 				DropEffect = Particle.Play( ParticleList.EXPLOSION_LANDMINE, m_AirDrop.GetPosition() );
 			
 				if (PrintInformationMessages && !PrintInformationCoordinates)
-					SendMessage("Airdrop landed!");		
-				else if (PrintInformationMessages && PrintInformationCoordinates)
-					SendMessage("Airdrop landed at " + m_AirDrop.GetPosition() + "!");		
-					
+				SendMessage("[Airdrop] Airdrop landed!");	
+				else if (PrintInformationMessages && PrintInformationCoordinates) {
+					array<string> arrCoords = new array<string>;
+					string strAirdropPos = m_AirDrop.GetPosition().ToString();
+					strAirdropPos = strAirdropPos.Substring(1, strAirdropPos.Length() - 2);
+					strAirdropPos.Split( ", ", arrCoords );
+					SendMessage("[Airdrop] Airdrop landed on coordinates " + Math.Round( arrCoords.Get(0).ToInt() ) + " " + Math.Round( arrCoords.Get(2).ToInt() ) + "!");
+				}
+
 				if (SpawnZombie)
 				{
 					GetGame().CreateObject( WorkingZombieClasses().GetRandomElement(), m_AirDrop.GetPosition() - "10 0 0", false, true );	
@@ -304,34 +325,64 @@ class CustomMission: MissionServer
 				
 				if (ShowSignal)
 				{
-					vector signal = "0 1.1 0";
+					vector signal = "0 1.5 0";
 					SignalEffect = Particle.Play( ParticleList.RDG2, m_AirDrop.GetPosition() + signal );			
 				}
+
+				// Removing physics body
+				PhysicsBody.SetPosition(vector.Zero);
+				GetGame().ObjectDelete( PhysicsBody ); 
+				PhysicsBody = NULL;	
 				
 				// Reset it to default values
 				RayReady = true;
 			}
 			else
 			{
-				m_AirDrop.SetPosition(m_NewAirDropPos);
+				vector phys;
+				phys[0] = m_AirDrop.GetPosition()[0];
+				phys[1] = PhysicsBody.GetPosition()[1];
+				phys[2] = m_AirDrop.GetPosition()[2];
+				
+				m_AirDrop.SetPosition(phys);
+				m_AirDrop.SetOrientation(PhysicsBody.GetOrientation());
 			}
 		}
-		
+
 		if (DropTime && !DropOnStart)
-		{			
-			RayReady = false;	
+		{	
+			RayReady = false;
+
+			if (PrintInformationMessages)
+			SendMessage("[Airdrop] Airdrop was dropped from the plane!");	
 			
 			m_AirDrop = GetGame().CreateObject( "Land_Container_1Bo", m_DropPos, false, true ); // Create airdrop model, in this case it is red container
-
+			
+			SetVelocity(PhysicsBody, "10 0 0");
+			GetGame().ObjectDelete(m_Platform);
+			SetVelocity(PhysicsBody, "10 0 0");
+			
 			// Reset it to default values
 			RemoveTimer = 0;
 			RemovePased = false;
 			DropTime = false;		
 		}
-    }	
-			
+	}
+
+	/* ### ### ### ### ### ### ### ### */
+	/* Airdrop controller */
+	/* ### ### ### ### ### ### ### ### */
+
+	bool init = true;
 	void CreateAirDrop()
 	{
+		if (!EnableAirdrops)
+			return;
+
+		if (init)
+			SendMessage("[Airdrop] Plugin initialized");
+		init = false;
+
 		// Remove timer		
 		if (RemoveTimer <= RemoveTime)
 		{
@@ -398,7 +449,7 @@ class CustomMission: MissionServer
 			AirTimer++;
 			
 			if (PrintDebugMessages)
-				SendMessage("Debug - " + AirTimer);		
+			SendMessage("[Airdrop, Debug] Airtimer value is " + AirTimer);
 		}
 		else
 		{	
@@ -409,12 +460,12 @@ class CustomMission: MissionServer
 		if (TimerPassed && !AirPassed)	
 		{
 			if (PrintDebugMessages)
-				SendMessage("Debug - Ticks Passed!");		
+			SendMessage("[Airdrop, Debug] Airtimer passed");	
 			
-			SpawnAirPlaneAndTeleportPlayer_DEBUG();
+			GetAirPlaneInfo();
 			
 			if (PrintDebugMessages)
-				SendMessage("Debug - Test! Spawned via timer");		
+			SendMessage("[Airdrop, Debug] Airdrop spawned via timer");		
 				
 			// Reset it to default values
 			AirPassed = true;
@@ -424,7 +475,7 @@ class CustomMission: MissionServer
 		{
 			if (m_AirPlane)
 			{
-				SpawnAirPlaneAndMove_DEBUG();
+				MoveAirPlane();
 			}
 		}
 			
@@ -432,14 +483,13 @@ class CustomMission: MissionServer
 		{
 			AirDropTime++;
 			
-			if (PrintDebugMessages)
+			if (TeleportDebug) // For debug puproses only
 			{
-				if (TeleportDebug)
-					SendPos(m_AirPlane.GetPosition());
-				
-				SendMessage("Debug Time - " + AirDropTime);		
-				SendMessage("Random Time - " + RandomTime);		
+				SendPos(m_AirPlane.GetPosition());
 			}
+
+			if (PrintDebugMessages)
+				SendMessage("[Airdrop, Debug] Airdrop time is " + AirDropTime + " from " + RandomTime);		
 		}
 		else
 		{
@@ -451,8 +501,10 @@ class CustomMission: MissionServer
 			{
 				if (!RayReady)
 				{
-					if (TeleportDebug)
-						SendPos(m_AirDrop.GetPosition());
+					if (TeleportDebug) // For debug puproses only
+					{
+						SendPos(m_AirPlane.GetPosition());
+					}
 				}
 			
 				if (!PassTime)
@@ -464,26 +516,6 @@ class CustomMission: MissionServer
 			}
 		}
 	}
-	
+
 	/* ### ### ### ### ### ### ### ### */
-	
-	float TimerSlice;
-	override void OnUpdate( float timeslice )
-	{
-		super.OnUpdate( timeslice );
-
-		// FPS Fix
-		TimerSlice += timeslice;
-		if (TimerSlice >= TimesliceMultiplyier)
-		{
-			if (EnableAirdrops)
-				CreateAirDrop();
-			TimerSlice = 0;	
-		}
-	}
-};
-
-Mission CreateCustomMission(string path)
-{
-	return new CustomMission();
 }
