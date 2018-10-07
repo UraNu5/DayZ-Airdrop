@@ -12,6 +12,11 @@ DayZ 0.63 AirDrop mod by mov3ax / mov3ax.pro
 
 * Extract archive to your mission folder, (e.g default dayzOffline.chernarusplus)
 * Open init.c file of your server using any notepad
+* Include plugin to your init.c file
+
+```
+#include "$CurrentDir:\\mpmissions\\dayzOffline.chernarusplus\\plugins\\AirDrop.c"
+```
 
 * Find your custom mission class
 
