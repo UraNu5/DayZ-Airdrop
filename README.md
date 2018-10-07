@@ -10,56 +10,58 @@ DayZ 0.63 AirDrop mod by mov3ax / mov3ax.pro
 
 ## Setup
 
-Copy all code from 
+* Extract archive to your mission folder, (e.g default dayzOffline.chernarusplus)
+* Open init.c file of your server using any notepad
 
-```
-/* DayZ 0.63 AirDrop plugin by mov3ax / mov3ax.pro */
-/* ### ### ### ### ### ### ### ### */
-```
-
-Up to
-
-```
-/* ### ### ### ### ### ### ### ### */
-```
-
-And paste it into init.c of your server, into class of your mission, by default it is -
+* Find your custom mission class
 
 ```
 class CustomMission: MissionServer
 ```
 
-After that copy OnUpdate method
+* Append this code inside class
 
 ```
-float TimerSlice;
-	override void OnUpdate( float timeslice )
+ref AirDrop AirDropClass; // Class definition
+float TimerSlice; float TimerSliceMultiplyier = AirDropClass.TimesliceMultiplyier;
+
+void AirDrop()
+{
+	AirDropClass.CreateAirDrop();
+}
+
+```
+
+* After that append OnUpdate method
+
+```
+override void OnUpdate( float timeslice )
 	{
 		super.OnUpdate( timeslice );
 
 		// FPS Fix
 		TimerSlice += timeslice;
-		if (TimerSlice >= TimesliceMultiplyier)
+		if (TimerSlice >= TimerSliceMultiplyier)
 		{
-			CreateAirDrop();
+			AirDrop();
 			TimerSlice = 0;	
 		}
 	}
 ```
 
-And put it to your, init.c file, if you already have OnUpdate method you just have to add "float TimerSlice;" above it and put following  code into your OnUpdate method
+If you already have OnUpdate method you just have to add following code into it
 
 ```
 // FPS Fix
-		TimerSlice += timeslice;
-		if (TimerSlice >= TimesliceMultiplyier)
-		{
-			CreateAirDrop();
-			TimerSlice = 0;	
-		}
+TimerSlice += timeslice;
+if (TimerSlice >= TimerSliceMultiplyier)
+{
+	AirDrop();
+	TimerSlice = 0;	
+}
 ```
 
-So now you have installed airdrop plugin
+Now you have installed airdrop plugin
 
 ## Configuration
 
@@ -110,7 +112,7 @@ TeleportDebug - Use only for debug and test puproses, teleport all players to ai
 
 ## Plans
 
-* ❎ Add physics to falling container
+* ✅ Add physics to falling container
 * ✅ Add airdrop flare
-* Fix plane sound radius
 * ✅ Add zombie spawns around airdrop
+* Fix plane sound radius
