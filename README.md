@@ -21,34 +21,29 @@ DayZ 0.63 AirDrop mod by mov3ax / mov3ax.pro
 * Find your custom mission class
 
 ```
-class CustomMission: MissionServer
+class CustomMission : MissionServer
 ```
 
 * Append this code inside class
 
 ```
 ref AirDrop AirDropClass; // Class definition
-float TimerSlice; float TimerSliceMultiplyier = AirDropClass.TimesliceMultiplyier;
 
-void AirDrop()
-{
-	AirDropClass.CreateAirDrop();
-}
+	void CustomMission()
+	{
+		AirDropClass = new AirDrop;		
+	}
 
-```
-
-* After that append OnUpdate method
-
-```
-override void OnUpdate( float timeslice )
+	float TimerSlice; // Timeslice
+	override void OnUpdate( float timeslice )
 	{
 		super.OnUpdate( timeslice );
 
 		// FPS Fix
 		TimerSlice += timeslice;
-		if (TimerSlice >= TimerSliceMultiplyier)
+		if (TimerSlice >= AirDropClass.TimesliceMultiplyier)
 		{
-			AirDrop();
+			AirDropClass.CreateAirDrop();
 			TimerSlice = 0;	
 		}
 	}
@@ -59,11 +54,17 @@ If you already have OnUpdate method you just have to add following code into it
 ```
 // FPS Fix
 TimerSlice += timeslice;
-if (TimerSlice >= TimerSliceMultiplyier)
+if (TimerSlice >= AirDropClass.TimesliceMultiplyier)
 {
-	AirDrop();
+	AirDropClass.CreateAirDrop();
 	TimerSlice = 0;	
 }
+```
+
+Also don't forget to add following variable above OnUpdate
+
+```
+float TimerSlice; // Timeslice
 ```
 
 Now you have installed airdrop plugin
