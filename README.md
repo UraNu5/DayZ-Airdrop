@@ -110,7 +110,7 @@ TeleportDebug - Use only for debug and test puproses, teleport all players to ai
 
 ## Plans
 
-* ❎ Add physics to falling container (Like physics on car) [Done in the Experimental Branch]
+* ❎ Add physics to falling container (Like physics on car) [Done in the Experimental Branch](https://github.com/mov3ax/airdrop/tree/exp "Github
 * ✅ Add airdrop flare
 * Fix plane sound radius
 * ✅ Add zombie spawns around airdrop
