@@ -235,7 +235,7 @@ class AirDrop
 		protected vector pos; pos[0] = 0; pos[1] = AirPlaneHeight; pos[2] = 0;
 
 		m_Platform = GetGame().CreateObject( "Land_Container_1Bo", pos, false, true ); 
-		PhysicsBody = EntityAI.Cast( GetGame().CreateObject( "CivilianSedan", m_Platform.GetPosition() + "0 0 0", false, true ) );
+		PhysicsBody = EntityAI.Cast( GetGame().CreateObject( "CivilianSedan", m_Platform.GetPosition(), false, true ) );
         PhysicsBody.SetAllowDamage( false );	
 	
 		if (DropOnStart) // For debug puproses only
