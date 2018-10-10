@@ -127,5 +127,6 @@ alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
 * ✅ Add physics to falling container
 * ✅ Add airdrop flare
 * ✅ Add zombie spawns around airdrop
+* Fix particles on server, land and signal effect
 * Fix plane sound radius
 * Show information about airdrop only with equipped radio
