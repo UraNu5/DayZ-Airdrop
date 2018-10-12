@@ -258,7 +258,10 @@ class AirDrop
 
 		if (TeleportDebug) // For debug puproses only
 		{
-			SendPos(m_AirPlane.GetPosition());
+			if (m_AirPlane != NULL)
+			{
+				SendPos(m_AirPlane.GetPosition());
+			}
 		}
 	}
 
