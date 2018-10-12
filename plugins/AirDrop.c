@@ -265,11 +265,11 @@ class AirDrop
 	void MoveAirPlane()
 	{
 		// Dynamic movement forward
-        float Forward = RandomRot * 0.017453292;
+        	float Forward = RandomRot * 0.017453292;
 
 		// 7.5 is airdrop container motion speed
 		float MotionX  = (double)(Math.Sin(Forward) * AirPlaneSpeed); 
-        float MotionZ = (double)(Math.Cos(Forward) * AirPlaneSpeed);
+        	float MotionZ = (double)(Math.Cos(Forward) * AirPlaneSpeed);
 
 		// Fixed position, if we dont multiply value to -1 it will move backwards
 		m_AirPlaneFixedPosition[0] = MotionX * -1;
@@ -339,13 +339,16 @@ class AirDrop
 			}
 			else
 			{
-				vector phys;
-				phys[0] = m_AirDrop.GetPosition()[0];
-				phys[1] = PhysicsBody.GetPosition()[1];
-				phys[2] = m_AirDrop.GetPosition()[2];
+				if (m_AirDrop != NULL)
+				{
+					vector phys;
+					phys[0] = m_AirDrop.GetPosition()[0];
+					phys[1] = PhysicsBody.GetPosition()[1];
+					phys[2] = m_AirDrop.GetPosition()[2];
 				
-				m_AirDrop.SetPosition(phys);
-				m_AirDrop.SetOrientation(PhysicsBody.GetOrientation());
+					m_AirDrop.SetPosition(phys);
+					m_AirDrop.SetOrientation(PhysicsBody.GetOrientation());
+				}
 			}
 		}
 
