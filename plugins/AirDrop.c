@@ -21,7 +21,7 @@ class AirDrop
 	float AirPlaneSpeed = 0.25; // Airplane fly speed 
 	float AirPlaneHeight = 500; // Airplane fly height 
 	// 600 Seconds = 10 Minutes
-	float TicksTimerFromStart = 10  / TimesliceMultiplyier; // How much time will pass from the server start to first airdrop
+	float TicksTimerFromStart = 600 / TimesliceMultiplyier; // How much time will pass from the server start to first airdrop
 	bool PrintInformationMessages = true; // Show in chat when airplane flew out and when airdrop is landed
 	bool PrintInformationCoordinates = true; // Show in chat coordinates where airdrop is landed
 	// 36000 Seconds = 1 Hour
