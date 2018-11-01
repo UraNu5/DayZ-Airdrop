@@ -130,4 +130,5 @@ alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
 * ✅ Fix particles on server, land and signal effect
 * Fix plane sound radius
 * Fix issue when sea chest won't remove
+* Fix container collision when its landed
 * Show information about airdrop only with equipped radio
