@@ -396,7 +396,7 @@ class AirDrop
 			return;
 
 		if (init)
-			SendMessage("[Airdrop] Plugin initialized");
+			GetGame().AdminLog("[Airdrop] Plugin initialized");
 		init = false;
 
 		// Remove timer		
