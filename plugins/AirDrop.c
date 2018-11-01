@@ -48,8 +48,8 @@ class AirDrop
 	EntityAI m_AirDropLoot; // Airdrop container body
 	ItemBase m_AirDropBase; // Airdrop container base
 
-	Particle DropEffect; // Airdrop land particle effect	
-	Particle SignalEffect; // Airdrop land particle effect	
+	EntityAI DropEffect; // Airdrop land particle effect	
+	EntityAI SignalEffect; // Airdrop land particle effect	
 
 	vector RandomRotOrientation; // Local variable	
 	EntityAI PhysicsBody; // Local variable
@@ -268,11 +268,11 @@ class AirDrop
 	void MoveAirPlane()
 	{
 		// Dynamic movement forward
-        	float Forward = RandomRot * 0.017453292;
+        float Forward = RandomRot * 0.017453292;
 
 		// 7.5 is airdrop container motion speed
 		float MotionX  = (double)(Math.Sin(Forward) * AirPlaneSpeed); 
-        	float MotionZ = (double)(Math.Cos(Forward) * AirPlaneSpeed);
+        float MotionZ = (double)(Math.Cos(Forward) * AirPlaneSpeed);
 
 		// Fixed position, if we dont multiply value to -1 it will move backwards
 		m_AirPlaneFixedPosition[0] = MotionX * -1;
@@ -308,6 +308,12 @@ class AirDrop
 				// Play particle when airdrop container, in this case it is red container
 				DropEffect = Particle.Play( ParticleList.EXPLOSION_LANDMINE, m_AirDrop.GetPosition() );
 			
+                // Shouts out Kolobov for that
+                DropEffect = EntityAI.Cast(GetGame().CreateObject( "LandMineTrap", m_AirDrop.GetPosition())); 
+                DropEffect.SetOrientation("0 0 0");
+                DropEffect.GetCompEM().SwitchOn(); 
+                DropEffect.Delete();	      
+            
 				if (PrintInformationMessages && !PrintInformationCoordinates)
 				SendMessage("[Airdrop] Airdrop landed!");	
 				else if (PrintInformationMessages && PrintInformationCoordinates) {
@@ -328,8 +334,12 @@ class AirDrop
 				
 				if (ShowSignal)
 				{
-					vector signal = "0 1.5 0";
-					SignalEffect = Particle.Play( ParticleList.RDG2, m_AirDrop.GetPosition() + signal );			
+                    // Shouts out Kolobov for that
+                    vector signal = "0 1.5 0"; 
+                    SignalEffect = EntityAI.Cast(GetGame().CreateObject( "RDG2SmokeGrenade_Black", m_AirDrop.GetPosition() + signal)); 
+                    SignalEffect.SetOrientation("0 0 0");
+                    SignalEffect.GetCompEM().SwitchOn(); 
+                    SignalEffect.Delete();			
 				}
 
 				// Removing physics body
@@ -429,13 +439,13 @@ class AirDrop
 				
 				if (DropEffect != NULL)
 				{
-					DropEffect.Stop();
+                    DropEffect.SetPosition(vector.Zero);
 					DropEffect = NULL;
 				}
 				
 				if (SignalEffect != NULL)
 				{
-					SignalEffect.Stop();
+                    SignalEffect.SetPosition(vector.Zero);
 					SignalEffect = NULL;
 				}
 				
