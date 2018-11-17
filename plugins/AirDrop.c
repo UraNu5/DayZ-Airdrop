@@ -77,6 +77,9 @@ class AirDrop
 	// Send message in global chat
 	void SendMessage(string message) 
 	{
+		GetGame().GetMission().OnEvent(ChatMessageEventTypeID, new ChatMessageEventParams(CCDirect, "", message, ""));
+		
+		/*
 		ref array<Man> players = new array<Man>; 
 		GetGame().GetPlayers( players ); 
 		
@@ -88,6 +91,7 @@ class AirDrop
 			Param1<string> m_AirTimer = new Param1<string>(message); 
 			GetGame().RPCSingleParam(player1, ERPCs.RPC_USER_ACTION_MESSAGE, m_AirTimer, true, player1.GetIdentity()); 
 		}
+		*/
 	}
 	
 	// Teleport all players to position, debug
